@@ -1,0 +1,1 @@
+Error:2017/09/18 15:39:38 main.go:40: Something has failed
