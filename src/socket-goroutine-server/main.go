@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	//	"io/ioutil"
 	"net"
 	"os"
 	"time"
@@ -11,34 +10,33 @@ import (
 func main() {
 	service := ":7777"
 
-	// 转换 ip 到 tcpAddr 结构
+	// 将 ip 地址转换成 tcpAddr 类型
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", service)
 	checkError(err)
 
-	// 监听地址
+	// 监听tcp端口
 	listener, err := net.ListenTCP("tcp", tcpAddr)
 	checkError(err)
 
 	for {
-		// 接收请求
+		// 接收一个链接请求
 		conn, err := listener.Accept()
-
 		if err != nil {
 			continue
 		}
 
-		//		request, err := ioutil.ReadAll(conn)
-		//		checkError(err)
-
-		//		fmt.Println(request)
-
-		daytime := time.Now().String()
-		fmt.Println(daytime)
-
-		// 写数据
-		conn.Write([]byte(daytime))
-		conn.Close()
+		// 启动一个 goroutine 用来处理请求
+		go handleClient(conn)
 	}
+}
+
+func handleClient(conn net.Conn) {
+	defer conn.Close()
+
+	daytime := time.Now().String()
+
+	// 写数据
+	conn.Write([]byte(daytime))
 }
 
 func checkError(err error) {
