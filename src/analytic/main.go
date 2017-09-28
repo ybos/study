@@ -2,11 +2,20 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"sync"
 	"time"
 
-	"http-request-info/user_agent"
+	"analytic/sarama"
+	"analytic/user_agent"
+)
+
+var (
+	wg     sync.WaitGroup
+	logger = log.New(os.Stderr, "[sarama]", log.LstdFlags)
 )
 
 func tongji(w http.ResponseWriter, r *http.Request) {
