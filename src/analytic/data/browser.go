@@ -43,6 +43,12 @@ func Get(data Resource, r *http.Request) {
 	data["server_ua_platform"] = ua.Platform()
 	data["server_ua_system"] = ua.OS()
 
+	if ua.Mobile() {
+		data["server_ua_is_mobile"] = "true"
+	} else {
+		data["server_ua_is_mobile"] = "false"
+	}
+
 	name, version := ua.Browser()
 	data["server_ua_browser_name"] = name
 	data["server_ua_browser_version"] = version
