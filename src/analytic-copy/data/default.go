@@ -1,38 +1,34 @@
 package data
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"time"
 )
 
 // 资源结构
-type Resource map[string]string
+type Resource = bytes.Buffer
 
 // 资源接口
-type ResourceFunc func(Resource, *http.Request)
+type ResourceFunc func(*Resource, *http.Request)
 
 var dataSource = make(map[string]ResourceFunc)
 
 func GetResource(r *http.Request) string {
 	start_time := time.Now()
-	source := make(Resource)
+	//	source := make(Resource)
+	var source Resource
 
 	for _, v := range dataSource {
-		v(source, r)
+		v(&source, r)
 	}
 
-	result := ""
-
-	for k, v := range source {
-		result += k + ":" + v + "\r\n"
-	}
-
-	result += "\r\n"
+	source.WriteString("\r\n")
 
 	fmt.Println("use time: ", time.Since(start_time))
 
-	return result
+	return source.String()
 }
 
 // 注册函数，将资源接口注册进列表
