@@ -9,6 +9,8 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+//const _kafka_topic string = "test"
+
 const _kafka_topic string = "wuliang"
 
 var KafkaProducer sarama.AsyncProducer
@@ -50,14 +52,13 @@ func consumeMessage(p sarama.AsyncProducer) {
 
 	for {
 		select {
-		case err := <-errors:
-			fmt.Println("Failed to send a message: ", err.Error())
+		case <-errors:
 		case <-successes:
 		}
 	}
 }
 
-func ProducerOne(p sarama.AsyncProducer, s string) {
+func ProducerOne(s string) {
 	// 消息的结构
 	msg := &sarama.ProducerMessage{
 		Topic: _kafka_topic,
@@ -65,5 +66,5 @@ func ProducerOne(p sarama.AsyncProducer, s string) {
 	}
 
 	// 写入消息
-	p.Input() <- msg
+	KafkaProducer.Input() <- msg
 }
