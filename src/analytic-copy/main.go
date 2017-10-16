@@ -2,6 +2,7 @@ package main
 
 import (
 	"analytic-copy/data"
+	"analytic-copy/db"
 	"fmt"
 	"net/http"
 )
@@ -27,10 +28,11 @@ import (
 //use time:  0s
 //use time:  0s
 
-
 // 访问统计的实现函数
 func pageVisit(w http.ResponseWriter, r *http.Request) {
 	var result = data.GetResource(r)
+
+	db.ProducerOne(db.KafkaProducer, result)
 
 	//	fmt.Printf(result)
 
