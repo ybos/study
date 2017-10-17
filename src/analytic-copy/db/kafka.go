@@ -11,7 +11,7 @@ import (
 
 //const _kafka_topic string = "test"
 
-const _kafka_topic string = "wuliang"
+const _kafka_topic string = "test"
 
 var KafkaProducer sarama.AsyncProducer
 
@@ -52,7 +52,8 @@ func consumeMessage(p sarama.AsyncProducer) {
 
 	for {
 		select {
-		case <-errors:
+		case err := <-errors:
+			fmt.Println("Failed to insert msg: ", err.Error())
 		case <-successes:
 		}
 	}
