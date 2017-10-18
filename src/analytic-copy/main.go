@@ -5,6 +5,7 @@ import (
 	"analytic-copy/db"
 	"fmt"
 	"net/http"
+	"runtime"
 	"sync/atomic"
 	"time"
 )
@@ -24,6 +25,8 @@ func pageVisit(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	// 设置路由规则
 	http.HandleFunc("/page-visit", pageVisit)
 
