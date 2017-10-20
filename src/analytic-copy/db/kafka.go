@@ -63,7 +63,7 @@ func ProducerOne(s string) {
 	// 消息的结构
 	msg := &sarama.ProducerMessage{
 		Topic: _kafka_topic,
-		Value: sarama.ByteEncoder(s),
+		Value: sarama.StringEncoder(s),
 	}
 
 	// 写入消息
