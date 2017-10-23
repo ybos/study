@@ -13,6 +13,7 @@ import (
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+	local, _ := time.LoadLocation("Asia/Shanghai")
 
 	var _startTime, _endTime string
 
@@ -26,13 +27,13 @@ func main() {
 		return
 	}
 
-	startTime, err := time.Parse("2006-01-02 15:04:05", _startTime)
+	startTime, err := time.ParseInLocation("2006-01-02 15:04:05", _startTime, local)
 	if err != nil {
 		fmt.Println("转换开始时间时出错, 错误日志为: ", err.Error())
 		return
 	}
 
-	endTime, err := time.Parse("2006-01-02 15:04:05", _endTime)
+	endTime, err := time.ParseInLocation("2006-01-02 15:04:05", _endTime, local)
 	if err != nil {
 		fmt.Println("转换结束时间时出错, 错误日志为: ", err.Error())
 		return
@@ -68,36 +69,33 @@ func main() {
 		return
 	}
 
+	fmt.Println(time.Now().In(local))
+
 	defer consumer.Close()
 	defer client.Close()
 
 	var countPageVisit uint32
 
-	//Out:
+Out:
 	for {
 		select {
 		case err := <-client.Errors():
 			log.Println("haha: ", err.Error())
+			break Out
 		case msg := <-client.Messages():
 			data := parseRecord(string(msg.Value))
 
-			log.Println(data["server_time"])
-
-			serverTime, err := time.Parse("2006-01-02 15:04:05.6 7", data["server_time"])
+			serverTime, err := time.ParseInLocation("2006-01-02 15:04:05 -0700 MST", data["server_time"], local)
 
 			if err != nil {
 				continue
 			}
 
-			log.Println(serverTime, "\n")
-
-			//			if serverTime.Unix() >= startTimestamp && serverTime.Unix() < endTimestamp {
-			//				countPageVisit++
-			//			} else if serverTime.Unix() <= endTimestamp {
-			//				break Out
-			//			}
-
-			//			log.Printf("Partition:%d, Offset:%d\n", msg.Partition, msg.Offset)
+			if serverTime.Unix() >= startTimestamp && serverTime.Unix() < endTimestamp {
+				countPageVisit++
+			} else if serverTime.Unix() >= endTimestamp {
+				break Out
+			}
 		}
 	}
 
