@@ -90,6 +90,11 @@ func main() {
 		fmt.Println("获取数据偏移量失败: ", err.Error())
 	}
 
+	if _startTime == "" && _endTime == "" {
+		fmt.Println("查询结果: ", maxOffset)
+		return
+	}
+
 	var countPageVisit uint32
 	var countRecord int64
 
