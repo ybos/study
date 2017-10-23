@@ -16,6 +16,11 @@ func main() {
 	local, _ := time.LoadLocation("Asia/Shanghai")
 
 	// 初始化参数
+	var _kafkaServers, _kafkaTopic string
+
+	flag.StringVar(&_kafkaServers, "kafka-servers", "", "请输入Kafka服务器地址(server1:9092,server2:9092,server3:9092)")
+	flag.StringVar(&_kafkaTopic, "kafka-topic", "", "请输入Kafka的话题名(example-topic)")
+
 	var _startTime, _endTime string
 	var startTime, endTime int64
 
@@ -23,6 +28,18 @@ func main() {
 	flag.StringVar(&_endTime, "end-time", "", "输入您需要查询的结束时间(2006-01-02 15:04:05)")
 
 	flag.Parse()
+
+	if _kafkaServers == "" {
+		fmt.Println("请输入Kafka服务器地址(server1:9092,server2:9092,server3:9092)")
+		return
+	}
+
+	kafkaServers := strings.Split(_kafkaServers, ",")
+
+	if _kafkaTopic == "" {
+		fmt.Println("请输入Kafka的话题名(example-topic)")
+		return
+	}
 
 	if _startTime != "" {
 		_startTimeObj, err := time.ParseInLocation("2006-01-02 15:04:05", _startTime, local)
@@ -60,14 +77,14 @@ func main() {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 
-	connect, err := sarama.NewConsumer(strings.Split("10.10.11.13:9092", ","), config)
+	connect, err := sarama.NewConsumer(kafkaServers, config)
 
 	if err != nil {
 		fmt.Println("创建一个连接失败: ", err.Error())
 		return
 	}
 
-	oldestConsumer, err := connect.ConsumePartition("test", 0, sarama.OffsetOldest)
+	oldestConsumer, err := connect.ConsumePartition(_kafkaTopic, 0, sarama.OffsetOldest)
 
 	if err != nil {
 		fmt.Println("创建最老的数据消费者失败: ", err.Error())
@@ -76,7 +93,7 @@ func main() {
 
 	defer oldestConsumer.Close()
 
-	client, err := sarama.NewClient(strings.Split("10.10.11.13:9092", ","), nil)
+	client, err := sarama.NewClient(kafkaServers, nil)
 
 	if err != nil {
 		fmt.Println("创建实例失败: ", err.Error())
@@ -84,7 +101,7 @@ func main() {
 
 	defer client.Close()
 
-	maxOffset, err := client.GetOffset("test", 0, sarama.OffsetNewest)
+	maxOffset, err := client.GetOffset(_kafkaTopic, 0, sarama.OffsetNewest)
 
 	if err != nil {
 		fmt.Println("获取数据偏移量失败: ", err.Error())
