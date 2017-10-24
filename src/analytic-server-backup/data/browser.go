@@ -6,8 +6,6 @@ import (
 	"net/url"
 	"time"
 
-	"analytic-chan-eg/config"
-
 	"github.com/mssola/user_agent"
 )
 
@@ -17,7 +15,7 @@ func init() {
 
 // 获取通过网络请求来获取的基本信息
 func Get(data *Resource, r *http.Request) {
-	data.WriteString("server_time:" + time.Now().In(config.CommonConfig.TimeLocation).Format("2006-01-02 15:04:05") + "\r\n")
+	data.WriteString("server_time:" + time.Now().Local().String() + "\r\n")
 	data.WriteString("server_client_ip:" + r.RemoteAddr + "\r\n")
 	ua := user_agent.New(r.UserAgent())
 
