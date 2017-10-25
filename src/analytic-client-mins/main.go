@@ -114,59 +114,42 @@ func main() {
 
 	var countPageVisit uint32
 	var countRecord int64
+	mins := make(map[int64]int)
 
 Out:
-	for msg := range oldestConsumer.Messages() {
-		countRecord++
-
-		data := parseRecord(string(msg.Value))
-
-		serverTime, err := time.ParseInLocation("2006-01-02 15:04:05", data["server_time"], local)
-
-		if err != nil {
-			continue
-		}
-
-		//		fmt.Println(countRecord, serverTime.Unix())
-
-		if serverTime.Unix() >= startTime && serverTime.Unix() < endTime {
-			countPageVisit++
-		} else if serverTime.Unix() >= endTime {
+	for {
+		select {
+		case err := <-oldestConsumer.Errors():
+			fmt.Println("数据获取失败: ", err.Error())
 			break Out
+		case msg := <-oldestConsumer.Messages():
+			countRecord++
+
+			data := parseRecord(string(msg.Value))
+
+			serverTime, err := time.ParseInLocation("2006-01-02 15:04:05", data["server_time"], local)
+
+			if err != nil {
+				continue
+			}
+
+			if serverTime.Unix() >= startTime && serverTime.Unix() < endTime {
+				mins[serverTime.Unix()] = mins[serverTime.Unix()] + 1
+				countPageVisit++
+			} else if serverTime.Unix() >= endTime {
+				break Out
+			}
+		default:
+			if countRecord >= maxOffset {
+				break Out
+			}
 		}
 	}
 
-	fmt.Println(countRecord)
-
-	//	for {
-	//		select {
-	//		case err := <-oldestConsumer.Errors():
-	//			fmt.Println("数据获取失败: ", err.Error())
-	//			break Out
-	//		case msg := <-oldestConsumer.Messages():
-	//			countRecord++
-
-	//			data := parseRecord(string(msg.Value))
-
-	//			serverTime, err := time.ParseInLocation("2006-01-02 15:04:05", data["server_time"], local)
-
-	//			if err != nil {
-	//				continue
-	//			}
-
-	//			fmt.Println(serverTime.Unix())
-
-	//			if serverTime.Unix() >= startTime && serverTime.Unix() < endTime {
-	//				countPageVisit++
-	//			} else if serverTime.Unix() >= endTime {
-	//				break Out
-	//			}
-	//		default:
-	//			if countRecord >= maxOffset {
-	//				break Out
-	//			}
-	//		}
-	//	}
+	fmt.Println("总数据量: ", maxOffset)
+	fmt.Println("查询数量: ", countRecord)
+	fmt.Println("查询结果: ", countPageVisit)
+	fmt.Println("mins: ", mins)
 }
 
 func parseRecord(record string) map[string]string {
