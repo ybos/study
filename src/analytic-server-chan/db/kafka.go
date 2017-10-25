@@ -12,7 +12,7 @@ import (
 
 var KafkaProducer sarama.AsyncProducer
 
-var KafkaChannel chan string = make(chan string, config.CommonConfig.MessageBuffNum)
+var KafkaChannel chan string
 
 // 初始化 kafka producer
 // 销毁 kafka producer
@@ -39,6 +39,10 @@ func CreateKafkaProducer() {
 	}
 
 	go consumeMessage(KafkaProducer)
+
+	KafkaChannel = make(chan string, config.CommonConfig.MessageBuffNum)
+
+	go AsyncProduceMessage()
 }
 
 // 及时的将通道清空, 防止阻塞
