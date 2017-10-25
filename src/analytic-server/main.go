@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"analytic-chan-eg/config"
-	"analytic-chan-eg/data"
-	"analytic-chan-eg/db"
+	"analytic-server/config"
+	"analytic-server/data"
+	"analytic-server/db"
 )
 
 func init() {
@@ -24,8 +24,8 @@ func init() {
 	// 初始化参数
 	var _kafkaServers, _kafkaTopic string
 
-	flag.StringVar(&_kafkaServers, "kafka-servers", "10.10.11.13:9092", "请输入Kafka服务器地址(server1:9092,server2:9092,server3:9092)")
-	flag.StringVar(&_kafkaTopic, "kafka-topic", "test", "请输入Kafka的话题名(example-topic)")
+	flag.StringVar(&_kafkaServers, "kafka-servers", "", "请输入Kafka服务器地址(server1:9092,server2:9092,server3:9092)")
+	flag.StringVar(&_kafkaTopic, "kafka-topic", "", "请输入Kafka的话题名(example-topic)")
 
 	flag.Parse()
 

@@ -5,9 +5,10 @@ import (
 )
 
 type Config struct {
-	KafkaServers []string
-	KafkaTopic   string
-	TimeLocation *time.Location
+	KafkaServers   []string
+	KafkaTopic     string
+	TimeLocation   *time.Location
+	MessageBuffNum int
 }
 
 var CommonConfig Config

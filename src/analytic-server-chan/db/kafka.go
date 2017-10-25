@@ -5,12 +5,14 @@ import (
 	"os"
 	"time"
 
-	"analytic-chan-eg/config"
+	"analytic-server-chan/config"
 
 	"github.com/Shopify/sarama"
 )
 
 var KafkaProducer sarama.AsyncProducer
+
+var KafkaChannel chan string = make(chan string, config.CommonConfig.MessageBuffNum)
 
 // 初始化 kafka producer
 // 销毁 kafka producer
@@ -56,13 +58,25 @@ func consumeMessage(p sarama.AsyncProducer) {
 	}
 }
 
+// 将消息写入一个缓存
+// 这一步有待考察, 通道是个有锁类型, 锁的开销在程序中占比会非常大
+// 可以考虑将这一步换做自定义的RWMutex配合批量写入(如果kafka支持的话)
 func ProducerOne(s string) {
-	// 消息的结构
-	msg := &sarama.ProducerMessage{
-		Topic: config.CommonConfig.KafkaTopic,
-		Value: sarama.StringEncoder(s),
-	}
+	KafkaChannel <- s
+}
 
-	// 写入消息
-	KafkaProducer.Input() <- msg
+// 异步提交消息
+func AsyncProduceMessage() {
+	for {
+		s := <-KafkaChannel
+
+		// 消息的结构
+		msg := &sarama.ProducerMessage{
+			Topic: config.CommonConfig.KafkaTopic,
+			Value: sarama.StringEncoder(s),
+		}
+
+		// 写入消息
+		KafkaProducer.Input() <- msg
+	}
 }

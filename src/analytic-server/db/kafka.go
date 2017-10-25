@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"analytic-chan-eg/config"
+	"analytic-server/config"
 
 	"github.com/Shopify/sarama"
 )

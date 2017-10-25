@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	"analytic-chan-eg/config"
+	"analytic-server/config"
 
 	"github.com/mssola/user_agent"
 )
