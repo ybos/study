@@ -4,8 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"runtime"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
+
+	"analytic-client-mins/config"
 
 	"github.com/Shopify/sarama"
 )
@@ -73,11 +77,7 @@ func main() {
 	fmt.Println("您需要查询的时间范围为：", time.Unix(startTime, 0).Format("2006-01-02 15:04:05"), " 至 ", time.Unix(endTime, 0).Format("2006-01-02 15:04:05"))
 	fmt.Println("如需更改时间请使用 --start-time 和 --end-time 参数")
 
-	// Kafka 基本信息获取
-	config := sarama.NewConfig()
-	config.Consumer.Return.Errors = true
-
-	connect, err := sarama.NewConsumer(kafkaServers, config)
+	connect, err := sarama.NewConsumer(kafkaServers, config.NewKafkaConfig())
 
 	if err != nil {
 		fmt.Println("创建一个连接失败: ", err.Error())
@@ -107,13 +107,9 @@ func main() {
 		fmt.Println("获取数据偏移量失败: ", err.Error())
 	}
 
-	if _startTime == "" && _endTime == "" {
-		fmt.Println("查询结果: ", maxOffset)
-		return
-	}
-
 	var countPageVisit uint32
 	var countRecord int64
+	timestamp := make([]string, 60)
 	mins := make(map[int64]int)
 
 Out:
@@ -149,7 +145,18 @@ Out:
 	fmt.Println("总数据量: ", maxOffset)
 	fmt.Println("查询数量: ", countRecord)
 	fmt.Println("查询结果: ", countPageVisit)
-	fmt.Println("mins: ", mins)
+
+	for k, _ := range mins {
+		timestamp = append(timestamp, strconv.FormatInt(k, 10))
+	}
+
+	sort.Strings(timestamp)
+
+	//	fmt.Println("mins: ", mins)
+	for _, t := range timestamp {
+		tt, _ := strconv.ParseInt(t, 10, 64)
+		fmt.Println(t, mins[tt])
+	}
 }
 
 func parseRecord(record string) map[string]string {

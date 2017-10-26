@@ -3,7 +3,6 @@ package db
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"analytic-server/config"
 
@@ -16,20 +15,11 @@ var KafkaProducer sarama.AsyncProducer
 // 销毁 kafka producer
 // 设置共享的 kafka producer
 func CreateKafkaProducer() {
-	// 创建新的配置
-	saramaConfig := sarama.NewConfig()
-	// producer.Successes() 是一个成功消息的通知管道，是个有缓存通道
-	// producer.Errors() 是一个失败消息的通知管道，是个有缓存通道
-	// 只有设置把 Return.Successes 设置成 true 才可以访问通道，如果不及时访问清理消息，可能造成阻塞
-	saramaConfig.Producer.Return.Successes = true
-	// 设置超时时间
-	saramaConfig.Producer.Timeout = 5 * time.Second
-
 	// 创建一个写对象
 	// SyncProducer 是对 ASyncProducer 的一个封装
 	// SyncProducer 每发送一条消息就要等待返回，所以不可以异步
 	var err error
-	KafkaProducer, err = sarama.NewAsyncProducer(config.CommonConfig.KafkaServers, saramaConfig)
+	KafkaProducer, err = sarama.NewAsyncProducer(config.CommonConfig.KafkaServers, config.NewKafkaConfig())
 
 	if err != nil {
 		fmt.Println("Failed to create producer: ", err.Error())
