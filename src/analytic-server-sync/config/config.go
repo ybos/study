@@ -20,7 +20,7 @@ func NewKafkaConfig() *sarama.Config {
 
 	conf.Producer.RequiredAcks = sarama.WaitForAll
 	conf.Producer.Return.Successes = true
-	conf.ChannelBufferSize = 1
+	//	conf.ChannelBufferSize = 1
 	conf.Version = sarama.V0_10_1_0
 
 	// producer.Successes() 是一个成功消息的通知管道，是个有缓存通道
