@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"runtime"
 	"strings"
@@ -16,7 +17,14 @@ import (
 
 func init() {
 	// 初始化设置
-	runtime.GOMAXPROCS(runtime.NumCPU())
+	var cpuNum = runtime.NumCPU()
+	if cpuNum > 30 {
+		cpuNum = cpuNum - 10
+	} else if cpuNum > 1 {
+		cpuNum = cpuNum / 2
+	}
+
+	runtime.GOMAXPROCS(cpuNum)
 
 	// 初始化时间相关
 	config.CommonConfig.TimeLocation, _ = time.LoadLocation("Asia/Shanghai")
