@@ -10,19 +10,17 @@ import (
 	"strings"
 	"time"
 
-	"analytic-server-chan/config"
-	"analytic-server-chan/data"
-	"analytic-server-chan/db"
+	"analytic-server-chan-pool/config"
+	"analytic-server-chan-pool/data"
+	"analytic-server-chan-pool/db"
+	"analytic-server-chan-pool/worker"
 )
 
 func init() {
 	// 初始化设置
 	var cpuNum = runtime.NumCPU()
-	if cpuNum > 30 {
-		cpuNum = cpuNum - 10
-	} else if cpuNum > 1 {
-		cpuNum = cpuNum / 2
-	}
+
+	config.CommonConfig.MaxWorker = (cpuNum / 2) + 1
 
 	runtime.GOMAXPROCS(cpuNum)
 
@@ -57,6 +55,9 @@ func init() {
 
 	// 初始化数据库
 	db.CreateKafkaProducer()
+
+	// 初始化处理器
+	worker.CreateWorker()
 }
 
 // 访问统计的实现函数
