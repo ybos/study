@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
 	//	_ "net/http/pprof"
 	"os"
 	"runtime"
@@ -11,8 +10,8 @@ import (
 	"time"
 
 	"analytic-server-chan-pool/config"
-	"analytic-server-chan-pool/data"
 	"analytic-server-chan-pool/db"
+	"analytic-server-chan-pool/server"
 	"analytic-server-chan-pool/worker"
 )
 
@@ -52,32 +51,17 @@ func init() {
 	config.CommonConfig.KafkaTopic = _kafkaTopic
 
 	config.CommonConfig.MessageBuffNum = _messageBuffNum
+}
+
+func main() {
+	fmt.Println("start server")
 
 	// 初始化数据库
 	db.CreateKafkaProducer()
 
 	// 初始化处理器
 	worker.CreateWorker()
-}
 
-// 访问统计的实现函数
-func pageVisit(w http.ResponseWriter, r *http.Request) {
-	var result = data.GetResource(r)
-
-	db.ProducerOne(result)
-
-	w.WriteHeader(http.StatusOK)
-}
-
-func main() {
-	// 设置路由规则
-	http.HandleFunc("/page-visit", pageVisit)
-
-	fmt.Println("start server")
-
-	err := http.ListenAndServe(":8080", nil)
-
-	if err != nil {
-		fmt.Println("Fatal error: ", err.Error())
-	}
+	// 初始化服务器
+	server.CreateServer()
 }
