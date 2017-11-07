@@ -2,41 +2,15 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 )
 
-func mixer(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-
-	fmt.Println(r.PostForm)
-}
-
 func main() {
-	http.HandleFunc("/", mixer)
+	str1 := "abcedf"
+	str2 := "abc一二三"
 
-	err := http.ListenAndServe(":80", nil)
+	fmt.Println(str1[:4])
+	fmt.Println(str2[:4], str2[:6]) // 截取的是字节长度，所以中文会有问题
 
-	if err != nil {
-		fmt.Println("Fatal error: ", err.Error())
-	}
-
-	res, err := http.PostForm("http://account.ecovacs.cn/account/member/signin", url.Values{"account": {"test"}, "password": {"test"}})
-
-	if err != nil {
-		fmt.Println("请求错误" + err.Error())
-		return
-	}
-
-	defer res.Body.Close()
-
-	body, err := ioutil.ReadAll(res.Body)
-
-	if err != nil {
-		fmt.Println("解析错误" + err.Error())
-		return
-	}
-
-	fmt.Println(string(body))
+	_str2 := []rune(str2)
+	fmt.Println(string(_str2[:4])) // 转换为rune类型再截取
 }
