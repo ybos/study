@@ -13,4 +13,11 @@ func main() {
 
 	_str2 := []rune(str2)
 	fmt.Println(string(_str2[:4])) // 转换为rune类型再截取
+
+	__str2 := []byte(str2)
+
+	fmt.Println(len(str2))
+	fmt.Println(len(_str2))
+	fmt.Println(len(__str2))
+
 }
