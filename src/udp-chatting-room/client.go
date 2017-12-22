@@ -18,9 +18,11 @@ var buff = make([]byte, config.MAX_MESSAGE_LENGTH)
 
 // ui相关
 var uiOnline = termui.NewList()
+var uiHistory = termui.NewList()
+var uiInput = termui.NewPar("")
 
 // 处理消息，当接收到请求之后，立刻将请求丢给 goroutine 去处理
-func HandleMessage(listener *net.UDPConn) {
+func HandleMessage(listener *net.UDPConn, nickname string) {
 	for {
 		n, _, err := listener.ReadFromUDP(buff)
 		utils.HandleError(err)
@@ -35,9 +37,13 @@ func HandleMessage(listener *net.UDPConn) {
 				list := msg[1 : len(msg)-1]
 
 				uiOnline.Items = list
+			case "message":
+				termui.Clear()
 
-				termui.Render(uiOnline)
+				uiHistory.Items = append(uiHistory.Items, msg[1])
 			}
+
+			termui.Render(uiOnline, uiHistory, uiInput)
 		}
 	}
 }
@@ -93,7 +99,7 @@ func main() {
 	go utils.KeepAlive(udpConn, nickname)
 
 	// 循环处理消息
-	go HandleMessage(udpListener)
+	go HandleMessage(udpListener, nickname)
 
 	// 图形库
 	if err := termui.Init(); err != nil {
@@ -102,13 +108,60 @@ func main() {
 
 	defer termui.Close()
 
+	termui.Body.Width = 120
+
 	uiOnline.Items = append(uiOnline.Items, "正在获取列表...")
+	uiOnline.Block.BorderLabel = "当前在线用户"
 	uiOnline.Block.Height = 40
 	uiOnline.Block.Width = 20
+	uiOnline.Block.Y = 0
 	uiOnline.Block.Float = termui.AlignRight
 	uiOnline.Block.BorderFg = termui.ColorCyan
 
-	termui.Handle("/sys/kbd/q", func(termui.Event) {
+	uiHistory.Block.BorderLabel = "大家正在说:"
+	uiHistory.Block.Height = 40
+	uiHistory.Block.Width = 100
+	uiOnline.Block.Y = 0
+	uiHistory.Block.Float = termui.AlignLeft
+	uiHistory.Block.BorderFg = termui.ColorCyan
+
+	uiInput.TextFgColor = termui.ColorBlack
+	uiInput.Height = 10
+	uiInput.Width = 120
+	uiInput.Y = 40
+	uiInput.BorderLabel = "输入框(回车发送信息)"
+
+	termui.Handle("/sys/kbd", func(e termui.Event) {
+		c := e.Data.(termui.EvtKbd)
+
+		b := []rune(c.KeyStr)
+		bl := len(b)
+
+		if bl == 1 {
+			uiInput.Text += c.KeyStr
+		} else if c.KeyStr == "<space>" {
+			uiInput.Text += " "
+		} else if c.KeyStr == "C-8" && uiInput.Text != "" {
+			t := []rune(uiInput.Text)
+			uiInput.Text = string(t[:len(t)-1])
+		} else if bl == 3 && b[0] != 67 && b[1] != 45 {
+			uiInput.Text += c.KeyStr
+		}
+
+		termui.Render(uiOnline, uiHistory, uiInput)
+	})
+
+	termui.Handle("/sys/kbd/<enter>", func(termui.Event) {
+		if uiInput.Text != "" {
+			utils.SendMessage(udpConn, "message", nickname, uiInput.Text)
+
+			uiInput.Text = ""
+
+			termui.Render(uiOnline, uiHistory, uiInput)
+		}
+	})
+
+	termui.Handle("/sys/kbd/C-c", func(termui.Event) {
 		termui.StopLoop()
 	})
 
@@ -117,7 +170,7 @@ func main() {
 		utils.SendMessage(udpConn, "online-user", nickname, "")
 	})
 
-	termui.Render(uiOnline)
+	termui.Render(uiOnline, uiHistory, uiInput)
 
 	termui.Loop()
 }

@@ -1,11 +1,10 @@
 package main
 
-// https://github.com/yinxin630/gochat
-
 import (
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
 	"time"
 	"udp-chatting-room/config"
 	"udp-chatting-room/utils"
@@ -45,6 +44,13 @@ func HandleMessage(listener *net.UDPConn) {
 				utils.HandleError(err)
 
 				onlineUser[msg[1]] = &User{time.Now(), udpConn}
+
+				// 发送一条友好的欢迎消息给所有人看
+				for k, v := range onlineUser {
+					if msg[1] != k {
+						utils.SendMessage(v.Conn, "message", "", "系统消息：欢迎 "+msg[1]+" 加入聊天室，大家一起积极参与话题讨论吧。")
+					}
+				}
 			}
 		case "heart-beat":
 			if _, ok := onlineUser[msg[1]]; ok {
@@ -59,11 +65,13 @@ func HandleMessage(listener *net.UDPConn) {
 
 				utils.SendMessage(onlineUser[msg[1]].Conn, "online-user", "", list)
 			}
-		}
+		case "message":
+			s := "[" + msg[1] + "]说：" + strings.Join(msg[2:], ":")
 
-		// for k, v := range onlineUser {
-		// fmt.Println(k, v.IP, v.Port, v.LastHeartBeatTime)
-		// }
+			for _, v := range onlineUser {
+				utils.SendMessage(v.Conn, "message", "", s)
+			}
+		}
 	}
 }
 
