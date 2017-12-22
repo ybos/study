@@ -54,7 +54,7 @@ func HandleMessage(listener *net.UDPConn) {
 			if _, ok := onlineUser[msg[1]]; ok {
 				list := ""
 				for k, _ := range onlineUser {
-					list += k + "\n"
+					list += k + ":"
 				}
 
 				utils.SendMessage(onlineUser[msg[1]].Conn, "online-user", "", list)
@@ -73,7 +73,7 @@ func HandleMessage(listener *net.UDPConn) {
 func cleanDead() {
 	for {
 		// 超过10秒钟未能发送心跳包的，就认定是死链，需要被清理
-		condition := time.Now().Add(-10 * time.Second)
+		condition := time.Now().Add(-3 * time.Second)
 
 		for k, v := range onlineUser {
 			if v.LastHeartBeatTime.Before(condition) {

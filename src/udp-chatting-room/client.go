@@ -17,7 +17,7 @@ import (
 var buff = make([]byte, config.MAX_MESSAGE_LENGTH)
 
 // ui相关
-var uiOnline = termui.NewBlock()
+var uiOnline = termui.NewList()
 
 // 处理消息，当接收到请求之后，立刻将请求丢给 goroutine 去处理
 func HandleMessage(listener *net.UDPConn) {
@@ -31,7 +31,11 @@ func HandleMessage(listener *net.UDPConn) {
 			switch msg[0] {
 			case "online-user":
 				termui.Clear()
-				uiOnline.Text = msg[1]
+
+				list := msg[1 : len(msg)-1]
+
+				uiOnline.Items = list
+
 				termui.Render(uiOnline)
 			}
 		}
@@ -98,11 +102,11 @@ func main() {
 
 	defer termui.Close()
 
-	uiOnline.Height = 40
-	uiOnline.Width = 20
-	uiOnline.Float = termui.AlignRight
-	uiOnline.TextFgColor = termui.ColorWhite
-	uiOnline.BorderFg = termui.ColorCyan
+	uiOnline.Items = append(uiOnline.Items, "正在获取列表...")
+	uiOnline.Block.Height = 40
+	uiOnline.Block.Width = 20
+	uiOnline.Block.Float = termui.AlignRight
+	uiOnline.Block.BorderFg = termui.ColorCyan
 
 	termui.Handle("/sys/kbd/q", func(termui.Event) {
 		termui.StopLoop()
