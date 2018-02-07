@@ -4,7 +4,7 @@ package queue
  * 最大数组长度
  * 如果超过该长度，则会返回失败
  */
-const MaxLenght uint32 = 10
+const MaxLenght uint32 = 100000
 
 /**
  * 基础数据结构

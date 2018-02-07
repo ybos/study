@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"circle-queue/queue"
+	"time"
+	"sync"
 )
 
 func main() {
@@ -57,4 +59,39 @@ func main() {
 	} else {
 		fmt.Println("存储失败")
 	}
+
+	//var wg sync.WaitGroup
+	//wg.Add(2)
+	//
+	//go func(d *queue.CircleQueue) {
+	//	defer wg.Done()
+	//
+	//	start := time.Now()
+	//
+	//	for i := 0; i < 1000000; i++ {
+	//		d.Put(i)
+	//	}
+	//
+	//	end := time.Now()
+	//	use := end.Sub(start)
+	//
+	//	fmt.Println("Put method, use ", use)
+	//}(d)
+	//
+	//go func(d *queue.CircleQueue) {
+	//	defer wg.Done()
+	//
+	//	start := time.Now()
+	//
+	//	for i := 0; i < 1000000; i++ {
+	//		d.Get()
+	//	}
+	//
+	//	end := time.Now()
+	//	use := end.Sub(start)
+	//
+	//	fmt.Println("Get method, use ", use)
+	//}(d)
+	//
+	//wg.Wait()
 }
