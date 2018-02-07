@@ -1,5 +1,7 @@
 package queue
 
+import "sync"
+
 /**
  * 最大数组长度
  * 如果超过该长度，则会返回失败
@@ -17,6 +19,7 @@ type CircleQueue struct {
 	head uint32
 	tail uint32
 	length uint32
+	lock sync.Mutex
 	value[MaxLenght] interface{}
 }
 
@@ -50,6 +53,10 @@ func (d *CircleQueue) IsEmpty() bool {
  * 第二个值是无符号整型，告诉你当前队列总共有多少数据
  */
 func (d *CircleQueue) Put(val interface{}) (bool, uint32) {
+	defer d.lock.Unlock()
+
+	d.lock.Lock()
+
 	if (d.IsFull()) {
 		return false, d.length
 	}
@@ -72,6 +79,10 @@ func (d *CircleQueue) Put(val interface{}) (bool, uint32) {
  * 第二个值是万能接口，返回具体的值
  */
 func (d *CircleQueue) Get() (bool, interface{}) {
+	defer d.lock.Unlock()
+
+	d.lock.Lock()
+
 	if (d.IsEmpty()) {
 		return false, nil
 	}
