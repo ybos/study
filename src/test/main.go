@@ -20,4 +20,15 @@ func main() {
 	fmt.Println(len(_str2))
 	fmt.Println(len(__str2))
 
+	c := make(chan string, 10)
+
+	c <- "a"
+	c <- "b"
+	c <- "c"
+	c <- "d"
+	c <- "e"
+	c <- "f"
+	c <- "g"
+
+	fmt.Println("channel capacity:", len(c))
 }

@@ -131,7 +131,7 @@ func main() {
 
 	wg.Wait()
 	end := time.Now()
-	fmt.Println("ninety thousand times use: ", end.Sub(start))
+	fmt.Println("ninety thousand times spends: ", end.Sub(start))
 
 	total, i1, i2, i3 := 0, 0, 0, 0
 
@@ -155,4 +155,43 @@ func main() {
 
 	fmt.Println("loop c1: ", c1, "\tc2: ", c2, "\tc3: ", c3)
 	fmt.Println("total: ", total, "\ti1: ", i1, "\ti2: ", i2, "\ti3: ", i3)
+
+	/* chan 做对比 */
+	testChan := make(chan int, 100000)
+
+	wg.Add(3)
+
+	c1, c2, c3 = 0, 0, 0
+
+	start = time.Now()
+	go func () {
+		defer wg.Done()
+
+		for i := 0; i < 30000; i++ {
+			testChan <- 1
+			c1++
+		}
+	}()
+
+	go func () {
+		defer wg.Done()
+
+		for i := 0; i < 30000; i++ {
+			testChan <- 2
+			c2++
+		}
+	}()
+
+	go func () {
+		defer wg.Done()
+
+		for i := 0; i < 30000; i++ {
+			testChan <- 3
+			c3++
+		}
+	}()
+
+	wg.Wait()
+	end = time.Now()
+	fmt.Println("ninety thousand times use channel spends: ", end.Sub(start))
 }
