@@ -49,6 +49,12 @@ const (
 	bathroom = iota
 )
 
+const (
+	livingroom = iota * 2
+	schoolroom
+	fuckingroom
+)
+
 func main() {
 	fmt.Println("apple: ", apple, "\ttype: ", reflect.TypeOf(apple))
 	fmt.Println("pear: ", pear, "\ttype: ", reflect.TypeOf(pear))
@@ -69,4 +75,5 @@ func main() {
 	fmt.Println("nephew: ", nephew, "\tniece: ", niece, "\tcousin: ", cousin)
 	fmt.Println("coca_cola: ", coca_cola, "\tpepsi: ", pepsi, "\twater: ", water)
 	fmt.Println("bedroom: ", bedroom, "\tkitchen: ", kitchen, "\tbathroom: ", bathroom)
+	fmt.Println("livingroom: ", livingroom, "\tschoolroom: ", schoolroom, "\tfuckingroom: ", fuckingroom)
 }
