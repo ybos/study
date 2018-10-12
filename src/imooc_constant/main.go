@@ -55,6 +55,12 @@ const (
 	fuckingroom
 )
 
+const (
+	a, b = iota, iota + 5
+	c, d
+	e = iota
+)
+
 func main() {
 	fmt.Println("apple: ", apple, "\ttype: ", reflect.TypeOf(apple))
 	fmt.Println("pear: ", pear, "\ttype: ", reflect.TypeOf(pear))
@@ -76,4 +82,5 @@ func main() {
 	fmt.Println("coca_cola: ", coca_cola, "\tpepsi: ", pepsi, "\twater: ", water)
 	fmt.Println("bedroom: ", bedroom, "\tkitchen: ", kitchen, "\tbathroom: ", bathroom)
 	fmt.Println("livingroom: ", livingroom, "\tschoolroom: ", schoolroom, "\tfuckingroom: ", fuckingroom)
+	fmt.Println("a: ", a, "\tb: ", b, "\tc: ", c, "\td: ", d, "\te: ", e)
 }
