@@ -60,4 +60,15 @@ func main() {
 	fmt.Printf("second_s2 = %v, len(second_s2) = %d, cap(second_s2) = %d\n", second_s2, len(second_s2), cap(second_s2))
 	fmt.Printf("second_s3 = %v, len(second_s3) = %d, cap(second_s3) = %d\n", second_s3, len(second_s3), cap(second_s3))
 
+	fmt.Println("--------------")
+
+	second_s4 := append(second_s3, 10)
+	second_s5 := append(second_s4, 11)
+	second_s6 := append(second_s5, 12)
+
+	fmt.Printf("second_s4 = %v, len(second_s4) = %d, cap(second_s4) = %d\n", second_s4, len(second_s4), cap(second_s4))
+	fmt.Printf("second_s5 = %v, len(second_s5) = %d, cap(second_s5) = %d\n", second_s5, len(second_s5), cap(second_s5))
+	fmt.Printf("second_s6 = %v, len(second_s6) = %d, cap(second_s6) = %d\n", second_s6, len(second_s6), cap(second_s6))
+
+	fmt.Println(second_array)
 }
