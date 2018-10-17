@@ -62,6 +62,8 @@ func main() {
 
 	fmt.Println("--------------")
 
+	// s4/s5/s6 no longer view second_array
+	// system will return a new slice include new ptr, new len, new capacity
 	second_s4 := append(second_s3, 10)
 	second_s5 := append(second_s4, 11)
 	second_s6 := append(second_s5, 12)
@@ -71,4 +73,28 @@ func main() {
 	fmt.Printf("second_s6 = %v, len(second_s6) = %d, cap(second_s6) = %d\n", second_s6, len(second_s6), cap(second_s6))
 
 	fmt.Println(second_array)
+
+	fmt.Println("--------------")
+
+	var third_slice []int // zero value for slice is nil
+
+	for i := 0; i < 10; i++ {
+		printSliceInfo(third_slice)
+
+		third_slice = append(third_slice, 2 * i + 1)
+	}
+
+	fmt.Println(third_slice)
+
+	fmt.Println("--------------")
+
+	third_slice1 := []int {2, 4, 6, 8}
+	printSliceInfo(third_slice1)
+
+	third_slice2 := make([]int, 10, 32)
+	printSliceInfo(third_slice2)
+}
+
+func printSliceInfo(s []int) {
+	fmt.Printf("len = %d, capacity = %d\n", len(s), cap(s))
 }
