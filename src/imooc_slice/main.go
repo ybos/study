@@ -93,8 +93,34 @@ func main() {
 
 	third_slice2 := make([]int, 10, 32)
 	printSliceInfo(third_slice2)
+
+	fmt.Println("--------------")
+
+	fourth_slice1 := []int {1, 2, 3, 4}
+	var fourth_slice2 = []int {0, 0, 0, 0, 0, 0, 0, 0}
+	copy(fourth_slice2, fourth_slice1)
+
+	printSliceInfo(fourth_slice1)
+	printSliceInfo(fourth_slice2)
+
+	fmt.Println("Deleting elements from slice")
+	fourth_slice2 = append(fourth_slice2[:3], fourth_slice2[4:]...)
+
+	printSliceInfo(fourth_slice2)
+
+	fmt.Println("Popping from front and back")
+	printSliceInfo(fourth_slice2)
+	fourth_front := fourth_slice2[0]
+	fourth_slice2 = fourth_slice2[1:]
+
+	fourth_tail := fourth_slice2[len(fourth_slice2) - 1]
+	fourth_slice2 = fourth_slice2[:len(fourth_slice2) - 1]
+
+	fmt.Println("front element: ", fourth_front, "\ttail element: ", fourth_tail)
+	printSliceInfo(fourth_slice2)
 }
 
 func printSliceInfo(s []int) {
+	fmt.Print(s, "\t")
 	fmt.Printf("len = %d, capacity = %d\n", len(s), cap(s))
 }
