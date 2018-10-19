@@ -61,7 +61,7 @@ func main() {
 	fmt.Println(result)
 
 	fmt.Println("======================\ncopy from imooc\n=================")
-	var data2 = []string {"112341516"}
+	var data2 = []string {"112341516", "a", "1231234123"}
 	// fdjksafnjhowefn  => fdjksanhowe
 
 	for _, v := range data2 {
@@ -78,26 +78,21 @@ func lengthOfNonRepeatingSubstr(s string) int {
 
 	for i, ch := range []byte(s) {
 		lastI, ok := lastOccurred[ch]
-		fmt.Println("lastOccurred[ch]", lastI, ok)
-		fmt.Println("start: ", start, "\tmaxLength: ", maxLength, "\ti: ", i, "\tch: ", string(ch))
+
+		fmt.Printf("if %t && %d >= %d {\n\tstart = %d + 1\n}\n", ok, lastI, start, lastI)
 
 		if ok && lastI >= start {
 			start = lastI + 1
 		}
 
-		if lastOccurred[ch] >= start {
-			start = lastOccurred[ch] + 1
-		}
+		fmt.Printf("if %d - %d + 1 > %d {\n\tmaxLength = %d - %d + 1\n}\n------------------\n", i, start, maxLength, i, start)
 
 		if i - start + 1 > maxLength {
 			maxLength = i - start + 1
 		}
 
 		lastOccurred[ch] = i
-
-		fmt.Println("start: ", start, "\tmaxLength: ", maxLength, "\n")
 	}
 
-	fmt.Println("↑↑↑↑")
 	return maxLength
 }
